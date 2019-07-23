@@ -12,12 +12,14 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using AutoUpdaterDotNET;
 using Base;
 using Base.Data_Classes;
 using Base.Display;
 using Base.IO_Classes;
 using Base.Master_Classes;
 using midsControls;
+using Newtonsoft.Json;
 
 namespace Hero_Designer
 {
@@ -385,6 +387,10 @@ namespace Hero_Designer
                 MessageBox.Show("An error has occurred when loading the main form. Error: " + ex.Message, "OMIGODHAX");
                 throw;
             }
+            AutoUpdater.ApplicationExitEvent += AutoUpdater_ApplicationExitEvent;
+            AutoUpdater.CheckForUpdateEvent += AutoUpdaterOnCheckForUpdateEvent;
+            //AutoUpdater.Start("http://midsreborn.com/mids_updates/update.xml");
+
         }
 
         I9Picker I9Picker
@@ -4647,9 +4653,82 @@ namespace Hero_Designer
         void tsRebornLink(object sender, EventArgs e)
             => clsXMLUpdate.GoToMidsReborn();
 
+        private void AutoUpdater_ApplicationExitEvent()
+        {
+            Text = @"Closing application...";
+            Thread.Sleep(5000);
+            Application.Exit();
+        }
+
+        private void AutoUpdaterOnCheckForUpdateEvent(UpdateInfoEventArgs args)
+        {
+            if (args != null)
+            {
+                if (args.IsUpdateAvailable)
+                {
+                    DialogResult dialogResult;
+                    if (args.Mandatory)
+                    {
+                        dialogResult =
+                            MessageBox.Show(
+                                $@"Update Detected! Version {args.CurrentVersion}. You are using version {
+                                        args.InstalledVersion
+                                    }. This is a mandatory update. Press OK to begin updating the application.",
+                                @"Update Available",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        dialogResult =
+                            MessageBox.Show(
+                                $@"Update Detected! Version {args.CurrentVersion} is available. You are using version {
+                                        args.InstalledVersion
+                                    }. Do you want to update the application now?", @"Update Available",
+                                MessageBoxButtons.YesNo,
+                                MessageBoxIcon.Information);
+                    }
+
+
+                    if (dialogResult.Equals(DialogResult.Yes) || dialogResult.Equals(DialogResult.OK))
+                    {
+                        try
+                        {
+                            //You can use Download Update dialog used by AutoUpdater.NET to download the update.
+
+                            if (AutoUpdater.DownloadUpdate())
+                            {
+                                Application.Exit();
+                            }
+                        }
+                        catch (Exception exception)
+                        {
+                            MessageBox.Show(exception.Message, exception.GetType().ToString(), MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+                        }
+                    }
+                }
+                else
+                {
+                    MessageBox.Show(@"There is currently no update(s) available. Please try again later.", @"Update Unavailable",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            else
+            {
+                MessageBox.Show(
+                    @"There was a problem attempting to reach the update server. Please check your internet connection and try again later.",
+                    @"Update Check Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+
         void tsUpdateCheck_Click(object sender, EventArgs e)
         {
-            clsXMLUpdate clsXmlUpdate = new clsXMLUpdate(); //"http://midsreborn.com/mids_updates/");
+            AutoUpdater.Start("http://midsreborn.com/mids_updates/update.xml");
+
+            //Comment out old code
+            /*clsXMLUpdate clsXmlUpdate = new clsXMLUpdate(); //"http://midsreborn.com/mids_updates/");
             var (eCheckResponse, msg) = clsXmlUpdate.UpdateCheck();
             if (eCheckResponse != clsXMLUpdate.eCheckResponse.Updates & eCheckResponse != clsXMLUpdate.eCheckResponse.FailedWithMessage)
             {
@@ -4673,7 +4752,7 @@ namespace Hero_Designer
                     return;
                 }
             }
-            this.RefreshInfo();
+            this.RefreshInfo();*/
         }
 
         void tsView2Col_Click(object sender, EventArgs e) => this.setColumns(2);
