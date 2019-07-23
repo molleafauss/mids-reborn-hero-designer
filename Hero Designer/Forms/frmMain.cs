@@ -4710,7 +4710,7 @@ namespace Hero_Designer
                 }
                 else
                 {
-                    MessageBox.Show(@"There is currently no update(s) available. Please try again later.", @"Update Unavailable",
+                    MessageBox.Show(@"There are currently no update(s) available. Please try again later.", @"Update Unavailable",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
