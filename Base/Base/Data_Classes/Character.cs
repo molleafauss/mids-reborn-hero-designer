@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
-using System.Windows.Forms;
 using Base.Display;
 using Base.Master_Classes;
 
@@ -546,6 +545,7 @@ namespace Base.Data_Classes
         public void Validate()
         {
             CheckAncillaryPowerSet();
+            CheckPowerPools();
             CurrentBuild.Validate();
             RefreshActiveSpecial();
         }
@@ -603,6 +603,21 @@ namespace Base.Data_Classes
                 }
                 if (!flag && powersetIndexes.Length > 0)
                     Powersets[7] = powersetIndexes[0];
+            }
+        }
+
+        void CheckPowerPools()
+        {
+            IPowerset[] powersetIndexes = DatabaseAPI.GetPowersetIndexes(this.Archetype, Enums.ePowerSetType.Pool);
+            // verify that all power pools refer to a powerset existing in the database and rest to the first available
+            // if they don't
+            Enums.PowersetType[] pools = { Enums.PowersetType.Pool0, Enums.PowersetType.Pool1, Enums.PowersetType.Pool2, Enums.PowersetType.Pool3 };
+            foreach (var pool in pools )
+            {
+                if (Powersets[(int) pool] == null)
+                {
+                    Powersets[(int) pool] = powersetIndexes[0];
+                }
             }
         }
 
