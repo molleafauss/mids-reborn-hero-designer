@@ -41,6 +41,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Extensions.cs" />
+    <Compile Include="Library.cs" />
     <Compile Include="ZStatus.Designer.cs">
       <DependentUpon>ZStatus.cs</DependentUpon>
     </Compile>
@@ -112,12 +113,6 @@
     <EmbeddedResource Include="ZStatus.resx">
       <DependentUpon>ZStatus.cs</DependentUpon>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\HeroDesigner.Schema\HeroDesigner.Schema.fsproj">
-      <Project>{7b1c2fff-0399-4a7a-82ef-126660356121}</Project>
-      <Name>HeroDesigner.Schema</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FSharp.Core">

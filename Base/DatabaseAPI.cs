@@ -9,7 +9,6 @@ using Base;
 using Base.Data_Classes;
 using Base.IO_Classes;
 using Base.Master_Classes;
-using HeroDesigner.Schema;
 
 public static class DatabaseAPI
 {
